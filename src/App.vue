@@ -1,132 +1,229 @@
 <template>
   <n-config-provider>
     <n-message-provider>
-      <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <n-layout-header class="bg-white shadow-sm">
-          <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-gray-800">UI Skill Comparison</h1>
-            <n-space>
-              <n-button type="primary">GitHub</n-button>
-            </n-space>
+      <div class="h-screen flex flex-col bg-gray-50">
+        <!-- Top: Skill Tabs -->
+        <n-layout-header class="bg-white shadow-sm border-b">
+          <div class="px-6 py-3 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-gray-800">UI Skill Comparison</h1>
+            <n-tabs 
+              v-model:value="activeSkill" 
+              type="line" 
+              @update:value="handleSkillChange"
+            >
+              <n-tab-pane 
+                v-for="skill in skills" 
+                :key="skill.id"
+                :name="skill.id"
+                :tab="skill.name"
+              >
+              </n-tab-pane>
+            </n-tabs>
           </div>
         </n-layout-header>
 
         <!-- Main Content -->
-        <n-layout class="mt-6">
-          <n-layout-content class="container mx-auto px-4">
-            <!-- Skill Showcase Cards -->
-            <n-grid :x-gap="16" :y-gap="16" :cols="3">
-              <n-gi v-for="skill in skills" :key="skill.name">
-                <n-card 
-                  :title="skill.name"
-                  class="hover:shadow-lg transition-shadow cursor-pointer"
-                  @click="handleSkillClick(skill)"
-                >
-                  <template #header-extra>
-                    <n-tag :type="skill.status === 'active' ? 'success' : 'default'">
-                      {{ skill.status === 'active' ? '可用' : '开发中' }}
-                    </n-tag>
-                  </template>
-                  
-                  <p class="text-gray-600 mb-4">{{ skill.description }}</p>
-                  
-                  <n-space vertical class="w-full">
-                    <n-progress 
-                      type="line" 
-                      :percentage="skill.score" 
-                      :show-indicator="false"
-                    />
-                    <div class="flex justify-between text-sm text-gray-500">
-                      <span>设计评分</span>
-                      <span>{{ skill.score }}分</span>
-                    </div>
-                  </n-space>
-                </n-card>
-              </n-gi>
-            </n-grid>
+        <div class="flex flex-1 overflow-hidden">
+          <!-- Left Sidebar: Example List -->
+          <div class="w-64 bg-white border-r overflow-y-auto">
+            <div class="p-4">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                示例列表
+              </h3>
+              <n-menu
+                :options="exampleOptions"
+                :value="activeExample"
+                @update:value="handleExampleChange"
+                class="border-0"
+              />
+            </div>
+          </div>
 
-            <!-- Demo Section -->
-            <n-card title="设计技能演示区" class="mt-8">
-              <n-space vertical size="large" class="w-full">
-                <n-alert type="info" title="使用说明">
-                  点击上方卡片查看不同设计技能的实际效果对比
-                </n-alert>
-                
-                <n-divider />
-                
-                <div class="grid grid-cols-2 gap-4">
-                  <n-button @click="message.info('这是 NaiveUI 按钮')" block>
-                    NaiveUI 按钮示例
-                  </n-button>
-                  
-                  <button 
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors"
-                    @click="message.success('这是 TailwindCSS 按钮')"
-                  >
-                    TailwindCSS 按钮示例
-                  </button>
+          <!-- Right Content: Prompt + Result -->
+          <div class="flex-1 flex overflow-hidden">
+            <!-- Left: Prompt Display -->
+            <div class="w-1/2 border-r bg-white overflow-y-auto">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-semibold text-gray-700">
+                    提示词
+                  </h2>
+                  <n-tag type="info" size="small">
+                    {{ activeSkill }}
+                  </n-tag>
                 </div>
-              </n-space>
-            </n-card>
-          </n-layout-content>
-        </n-layout>
+                
+                <n-card class="bg-gray-50">
+                  <div class="prose max-w-none">
+                    <pre class="whitespace-pre-wrap text-sm text-gray-700 font-mono bg-gray-100 p-4 rounded-lg">{{ currentPrompt }}</pre>
+                  </div>
+                </n-card>
+              </div>
+            </div>
+
+            <!-- Right: Skill Result (iframe) -->
+            <div class="w-1/2 bg-gray-100 overflow-hidden">
+              <div class="p-6 h-full flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-semibold text-gray-700">
+                    生成结果
+                  </h2>
+                  <n-space>
+                    <n-button 
+                      size="small" 
+                      @click="refreshIframe"
+                      :loading="iframeLoading"
+                    >
+                      刷新
+                    </n-button>
+                    <n-button 
+                      size="small" 
+                      @click="openInNewTab"
+                    >
+                      新窗口打开
+                    </n-button>
+                  </n-space>
+                </div>
+                
+                <div class="flex-1 bg-white rounded-lg shadow-sm overflow-hidden">
+                  <iframe
+                    v-if="currentResultUrl"
+                    :src="currentResultUrl"
+                    class="w-full h-full border-0"
+                    @load="iframeLoading = false"
+                  ></iframe>
+                  <div 
+                    v-else 
+                    class="w-full h-full flex items-center justify-center text-gray-400"
+                  >
+                    请选择示例和技能查看结果
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </n-message-provider>
   </n-config-provider>
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+import { ref, computed } from 'vue'
 import {
   NConfigProvider,
   NMessageProvider,
   NLayout,
   NLayoutHeader,
-  NLayoutContent,
+  NTabs,
+  NTabPane,
   NSpace,
   NButton,
   NCard,
-  NGi,
-  NGrid,
   NTag,
-  NProgress,
-  NAlert,
-  NDivider,
+  NMenu,
   useMessage
 } from 'naive-ui'
 
 const message = useMessage()
 
-interface Skill {
-  name: string
-  description: string
-  score: number
-  status: 'active' | 'development'
+// Skills data
+const skills = ref([
+  { id: 'frontend-design', name: 'Frontend Design', description: '前端设计技能' },
+  { id: 'ui-ux-pro-max', name: 'UI/UX Pro Max', description: '专业UI/UX设计' },
+  { id: 'taste', name: 'Taste Skill', description: '审美设计技能' }
+])
+
+const activeSkill = ref('frontend-design')
+
+// Examples data
+const examples = ref([
+  {
+    id: 'landing-page',
+    name: '产品落地页',
+    prompt: `设计一个现代化的 SaaS 产品落地页，包含：
+- 吸引人的 Hero Section
+- 产品特性展示（3-4个核心功能）
+- 定价方案对比
+- 用户评价/社交证明
+- Footer 联系方式
+
+要求：简洁、专业、有视觉冲击力`
+  },
+  {
+    id: 'dashboard',
+    name: '数据仪表盘',
+    prompt: `设计一个数据分析仪表盘界面，包含：
+- 顶部关键指标卡片（KPI）
+- 图表展示区域（折线图、柱状图、饼图）
+- 侧边栏导航
+- 实时数据更新提示
+- 深色/浅色主题切换
+
+要求：信息密度高但不拥挤，数据可视化清晰`
+  },
+  {
+    id: 'blog-layout',
+    name: '博客文章页',
+    prompt: `设计一个技术博客的文章页面，包含：
+- 文章标题和元信息（作者、日期、阅读时间）
+- 目录导航（TOC）
+- 正文排版（代码高亮、引用块、图片）
+- 评论区
+- 相关文章推荐
+- 移动端适配
+
+要求：优秀的阅读体验，排版精美`
+  }
+])
+
+const activeExample = ref('landing-page')
+
+// Computed
+const exampleOptions = computed(() => {
+  return examples.value.map(example => ({
+    key: example.id,
+    label: example.name
+  }))
+})
+
+const currentPrompt = computed(() => {
+  const example = examples.value.find(e => e.id === activeExample.value)
+  return example ? example.prompt : ''
+})
+
+const currentResultUrl = computed(() => {
+  // 这里指向 public 目录下的 HTML 文件
+  return `/results/${activeSkill.value}/${activeExample.value}.html`
+})
+
+const iframeLoading = ref(false)
+
+// Methods
+const handleSkillChange = (skillId: string) => {
+  activeSkill.value = skillId
+  iframeLoading.value = true
+  message.info(`切换到 ${skills.value.find(s => s.id === skillId)?.name}`)
 }
 
-const skills: Skill[] = [
-  {
-    name: 'frontend-designer',
-    description: '前端设计技能，注重交互体验和视觉效果',
-    score: 85,
-    status: 'active'
-  },
-  {
-    name: 'ui-ux-pro-max',
-    description: '专业 UI/UX 设计，提供极致用户体验',
-    score: 92,
-    status: 'active'
-  },
-  {
-    name: 'taste-skill',
-    description: '审美设计技能，提升整体视觉品味',
-    score: 78,
-    status: 'development'
-  }
-]
+const handleExampleChange = (exampleId: string) => {
+  activeExample.value = exampleId
+  iframeLoading.value = true
+  message.info(`加载示例: ${examples.value.find(e => e.id === exampleId)?.name}`)
+}
 
-const handleSkillClick = (skill: Skill) => {
-  message.info(`正在查看 ${skill.name} 的详细信息`)
+const refreshIframe = () => {
+  iframeLoading.value = true
+  const iframe = document.querySelector('iframe')
+  if (iframe) {
+    iframe.src = iframe.src
+  }
+  message.success('已刷新')
+}
+
+const openInNewTab = () => {
+  if (currentResultUrl.value) {
+    window.open(currentResultUrl.value, '_blank')
+  }
 }
 </script>

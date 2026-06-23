@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>数据仪表盘 - Frontend Design</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold mb-8">数据仪表盘</h1>
+    
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">总用户</p>
+        <p class="text-3xl font-bold">12,458</p>
+        <p class="text-green-500 text-sm mt-2">↑ 12%</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">订单量</p>
+        <p class="text-3xl font-bold">3,287</p>
+        <p class="text-green-500 text-sm mt-2">↑ 8%</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">收入</p>
+        <p class="text-3xl font-bold">¥89.2万</p>
+        <p class="text-red-500 text-sm mt-2">↓ 3%</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">转化率</p>
+        <p class="text-3xl font-bold">23.5%</p>
+        <p class="text-green-500 text-sm mt-2">↑ 5%</p>
+      </div>
+    </div>
+
+    <!-- Charts Placeholder -->
+    <div class="grid grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-4">访问趋势</h3>
+        <div class="h-64 bg-gradient-to-r from-blue-50 to-purple-50 rounded flex items-center justify-center text-gray-400">
+          折线图区域
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-4">用户分布</h3>
+        <div class="h-64 bg-gradient-to-r from-green-50 to-cyan-50 rounded flex items-center justify-center text-gray-400">
+          饼图区域
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

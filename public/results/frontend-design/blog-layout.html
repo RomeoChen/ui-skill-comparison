@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博客文章 - Frontend Design</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="mb-12">
+      <div class="flex items-center text-sm text-gray-500 mb-4">
+        <span>技术博客</span>
+        <span class="mx-2">›</span>
+        <span>前端开发</span>
+      </div>
+      <h1 class="text-5xl font-bold text-gray-900 mb-6">
+        Vue3 Composition API 完全指南
+      </h1>
+      <div class="flex items-center gap-6 text-sm text-gray-500">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+          <span>RomeoChen</span>
+        </div>
+        <span>2026-06-23</span>
+        <span>8分钟阅读</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="bg-gray-50 p-6 rounded-lg mb-12">
+      <h3 class="font-semibold mb-3">目录</h3>
+      <ul class="space-y-2 text-sm text-blue-600">
+        <li>1. 什么是 Composition API</li>
+        <li>2. setup 函数</li>
+        <li>3. 响应式引用 (ref)</li>
+        <li>4. 最佳实践</li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="prose max-w-none">
+      <h2 class="text-3xl font-bold mt-8 mb-4">什么是 Composition API</h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        Composition API 是 Vue 3 引入的一种新的组件逻辑组织方式...
+      </p>
+      <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code>import { ref, computed } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    const doubled = computed(() => count.value * 2)
+    
+    return { count, doubled }
+  }
+}</code></pre>
+      
+      <blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-6">
+        Composition API 让逻辑复用变得前所未有的简单。
+      </blockquote>
+    </div>
+
+    <!-- Comments -->
+    <div class="mt-16 pt-8 border-t">
+      <h3 class="text-2xl font-bold mb-6">评论 (3)</h3>
+      <div class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="font-semibold mb-2">Alice</div>
+          <p class="text-gray-600 text-sm">非常实用的指南，感谢分享！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
